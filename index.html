@@ -1,0 +1,72 @@
+  
+<html>
+    <style>
+        body {
+            margin: 0;
+        }
+        .titulo {
+            background-color: rgb(33, 33, 134);
+            text-align: center;
+            padding: 2px;
+        }
+        .titulo h1 {
+            color: white;
+        }
+        .cuerpo {
+            padding: 50px;
+            text-align: center;
+        }
+    </style>
+    <body>
+        <div class="titulo">
+            <h1>ToDo List</h1>
+        </div>
+        <div class="cuerpo">
+            <input id="txt_todo" type="text"></input>
+            <input id="btn_aceptar" type="button" value="Aceptar"></input>
+            <div id="lista">
+        </div>
+        </div>
+    </body>
+    <script>
+        const btn_aceptar = document.getElementById("btn_aceptar");
+        btn_aceptar.onclick = function() {
+
+            const lista = document.getElementById("lista");
+            const node = document.createElement("p");
+            var texto = document.createTextNode(document.getElementById("txt_todo").value);
+            node.appendChild(texto);
+            lista.appendChild(node);
+            var obj = {name: document.getElementById("txt_todo").value}
+
+            fetch('http://localhost:3000/lista-todo', {
+                method: 'POST',
+                body: JSON.stringify(obj),
+                headers: {
+                    'Content-Type':'application/json'
+                }
+            }).then(res => res.json())
+            .catch(error => error => console.error("Error:",error))
+            .then(response => console.log('Success:',response))
+        }
+
+        window.onload = function() {
+            fetch('http://localhost:3000/lista-todo', {
+                method: 'get',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                for (const todo of data.lista) {
+                    const lista = document.getElementById("lista");
+                    const node = document.createElement("p");
+                    var texto = document.createTextNode(todo.name);
+                    node.appendChild(texto);
+                    lista.appendChild(node);
+                }
+            });
+        }
+    </script>
+</html>
